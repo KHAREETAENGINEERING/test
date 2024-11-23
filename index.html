@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="css/leaflet.css">
+    <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+    <link rel="stylesheet" href="css/qgis2web.css">
+    <link rel="stylesheet" href="css/fontawesome-all.min.css">
+    <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Styling for the flags at the top left */
+        .flag-container {
+            position: absolute;
+            top: 5px;
+            right:5px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .flag {
+            width: 60px;
+            height: 15px;
+            margin-bottom: 3px;
+            cursor: pointer;
+        }
+
+        .country-name {
+            text-align: center;
+            margin-bottom: 1px;
+            color: #57520d;
+            font-weight: bold;
+            background-color: #fcfdfb;
+            width: 60px;
+            height: 12px;
+            font-size: 10px;
+        }
+
+        /* Style for the image at the bottom-left corner */
+        .image-container {
+            position: absolute;
+            top: -13px;
+            right: 70px;
+            z-index: 999;
+           
+        }
+
+        .image-container img {
+            width: 200px; /* Set the width of the image */
+            height: 640px; /* Maintain aspect ratio */
+            border-radius: 25px;
+        }
+
+        /* Popup Table Styling */
+        .popup-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Table rows and columns */
+        .popup-table td, .popup-table th {
+            border: 2px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        /* Table Header */
+        .popup-table th {
+            background-color: #4CAF50; /* Green header */
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Table Body */
+        .popup-table tr:nth-child(odd) {
+            background-color: #f2f2f2; /* Light gray for odd rows */
+        }
+
+        .popup-table tr:nth-child(even) {
+            background-color: #e1f7d5; /* Light green for even rows */
+        }
+
+        /* Image styling inside popup */
+        .popup-image {
+            width: 100%;  /* Adjust to fit within table */
+            max-width: 150px;  /* Max width for the image */
+            height: auto;
+            border-radius: 5px;
+        }
+
+        /* Image container style */
+        .popup-table img {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+    <title>Map with Flags and Country Names</title>
+</head>
+<body>
+    <div id="map"></div>
+
+    <!-- Flags placed in the top-left corner -->
+    <div class="flag-container">
+        
+        <div class="country-name">Saudi Arabia</div>
+        <img src="https://flagcdn.com/w320/sa.png" class="flag" id="saudiArabiaFlag" alt="Saudi Arabia Flag">
+        
+        <div class="country-name">Germany</div>
+        <img src="https://flagcdn.com/w320/de.png" class="flag" id="germanyFlag" alt="Germany Flag">
+        
+        <div class="country-name">China</div>
+        <img src="https://flagcdn.com/w320/cn.png" class="flag" id="chinaFlag" alt="China Flag">
+
+        <div class="country-name">USA</div>
+        <img src="https://flagcdn.com/w320/us.png" class="flag" id="usaFlag" alt="USA Flag">
+
+        <div class="country-name">India</div>
+        <img src="https://flagcdn.com/w320/in.png" class="flag" id="indiaFlag" alt="India Flag">
+
+        <div class="country-name">Russia</div>
+        <img src="https://flagcdn.com/w320/ru.png" class="flag" id="russiaFlag" alt="Russia Flag">
+
+        <div class="country-name">Brazil</div>
+        <img src="https://flagcdn.com/w320/br.png" class="flag" id="brazilFlag" alt="Brazil Flag">
+
+        <div class="country-name">UK</div>
+        <img src="https://flagcdn.com/w320/gb.png" class="flag" id="ukFlag" alt="UK Flag">
+
+        <div class="country-name">Australia</div>
+        <img src="https://flagcdn.com/w320/au.png" class="flag" id="australiaFlag" alt="Australia Flag">
+
+        <div class="country-name">Japan</div>
+        <img src="https://flagcdn.com/w320/jp.png" class="flag" id="japanFlag" alt="Japan Flag">
+
+        <div class="country-name">France</div>
+        <img src="https://flagcdn.com/w320/fr.png" class="flag" id="franceFlag" alt="France Flag">
+
+        <div class="country-name">Canada</div>
+        <img src="https://flagcdn.com/w320/ca.png" class="flag" id="canadaFlag" alt="Canada Flag">
+
+        <div class="country-name">Mexico</div>
+        <img src="https://flagcdn.com/w320/mx.png" class="flag" id="mexicoFlag" alt="Mexico Flag">
+
+        <div class="country-name">Italy</div>
+        <img src="https://flagcdn.com/w320/it.png" class="flag" id="italyFlag" alt="Italy Flag">
+
+        <div class="country-name">South Africa</div>
+        <img src="https://flagcdn.com/w320/za.png" class="flag" id="southAfricaFlag" alt="South Africa Flag">
+
+        <div class="country-name">Argentina</div>
+        <img src="https://flagcdn.com/w320/ar.png" class="flag" id="argentinaFlag" alt="Argentina Flag">
+
+        <div class="country-name">Egypt</div>
+        <img src="https://flagcdn.com/w320/eg.png" class="flag" id="egyptFlag" alt="Egypt Flag">
+
+        <div class="country-name">Turkey</div>
+        <img src="https://flagcdn.com/w320/tr.png" class="flag" id="turkeyFlag" alt="Turkey Flag">
+
+        <div class="country-name">Spain</div>
+        <img src="https://flagcdn.com/w320/es.png" class="flag" id="spainFlag" alt="Spain Flag">
+
+        <div class="country-name">Nigeria</div>
+        <img src="https://flagcdn.com/w320/ng.png" class="flag" id="nigeriaFlag" alt="Nigeria Flag">
+
+    </div>
+
+    <div class="image-container">
+        <img src="images/chart 88.png" alt="Great Wall of China">
+    </div>
+
+    <script src="js/qgis2web_expressions.js"></script>
+    <script src="js/leaflet.js"></script>
+    <script src="js/L.Control.Layers.Tree.min.js"></script>
+    <script src="js/leaflet.rotatedMarker.js"></script>
+    <script src="js/leaflet.pattern.js"></script>
+    <script src="js/leaflet-hash.js"></script>
+    <script src="js/Autolinker.min.js"></script>
+    <script src="js/rbush.min.js"></script>
+    <script src="js/labelgun.min.js"></script>
+    <script src="js/labels.js"></script>
+    <script src="data/china_2.js"></script>
+    <script src="data/germany_3.js"></script>
+
+    <script>
+        
+        var map = L.map('map', {
+            zoomControl: true,
+            maxZoom: 28,
+            minZoom: 3
+        });
+ 
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+
+        // Define the layers for Germany and China polygons
+        var germanyLayer, chinaLayer;
+
+        function pop_china_2(feature, layer) {
+            var popupContent = '<table class="popup-table">' +
+                '<tr><th>Country</th><td>' + feature.country + '</td></tr>' +
+                '<tr><th>Population</th><td>' + feature.population + '</td></tr>' +
+                '<tr><th>Area</th><td>' + feature.area + '</td></tr>' +
+                '<tr><th>Flag</th><td><img src="' + feature.flag + '" class="popup-image" alt="Flag"></td></tr>' +
+                '</table>';
+            layer.bindPopup(popupContent);
+        }
+
+        function style_china_2() {
+            return {
+                color: 'rgba(200,35,70,1.0)',
+                weight: 5,
+                fill: true,
+                fillOpacity: 0.6,
+                fillColor: 'rgba(255, 255, 224)',
+                interactive: true
+            };
+        }
+
+        // Create GeoJSON layer for China
+        chinaLayer = new L.geoJson(json_china_2, {
+            onEachFeature: pop_china_2,
+            style: style_china_2,
+        });
+
+        function pop_germany_3(feature, layer) {
+            var popupContent = '<table class="popup-table">' +
+                '<tr><th>Country</th><td>' + feature.country + '</td></tr>' +
+                '<tr><th>Population</th><td>' + feature.population + '</td></tr>' +
+                '<tr><th>Area</th><td>' + feature.area + '</td></tr>' +
+                '<tr><th>Flag</th><td><img src="' + feature.flag + '" class="popup-image" alt="Flag"></td></tr>' +
+                '</table>';
+            layer.bindPopup(popupContent);
+        }
+
+        function style_germany_3() {
+            return {
+                color: 'rgba(200,35,70,1.0)',
+                weight: 5,
+                fill: true,
+                fillOpacity: 0.6,
+                fillColor: 'rgba(48,255,138,1.0)',
+                interactive: true
+            };
+        }
+
+        // Create GeoJSON layer for Germany
+        germanyLayer = new L.geoJson(json_germany_3, {
+            onEachFeature: pop_germany_3,
+            style: style_germany_3,
+        });
+
+        // Create base layers
+        
+        var layer_GoogleSatellite_1 = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            attribution: 'Map data &copy; <a href="https://www.google.com/earth/">Google Earth</a>',
+            maxZoom: 28,
+            minZoom: 1,
+        });
+        var layer_GoogleTerrainHybrid_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
+            attribution: 'Map data &copy; <a href="https://www.google.com/earth/">Google Earth</a>',
+            maxZoom: 28,
+            minZoom: 1,
+        });
+
+
+        // Add default base layer
+        map.addLayer(layer_GoogleTerrainHybrid_0);
+
+        // Base layer control for switching maps
+        var baseLayers = {
+            "Terrain": layer_GoogleTerrainHybrid_0,
+            "Satellite": layer_GoogleSatellite_1
+        };
+
+        // Layer control for adding/removing the polygon layers
+        var overlayLayers = {
+            "Germany": germanyLayer,
+            "China": chinaLayer
+        };
+
+        // Add the layers control to the map (top right)
+        L.control.layers(baseLayers, overlayLayers, {
+            position: 'topleft'
+        }).addTo(map);
+
+        // Event listener for Germany flag
+        document.getElementById('germanyFlag').addEventListener('click', function() {
+            map.setView([51.1657, 10.4515], 6);  // Coordinates for Germany
+            if (!map.hasLayer(germanyLayer)) {
+                map.addLayer(germanyLayer);  // Add Germany polygon if not already added
+            }
+            if (map.hasLayer(chinaLayer)) {
+                map.removeLayer(chinaLayer);  // Remove China polygon if present
+            }
+        });
+
+        // Event listener for China flag
+        document.getElementById('chinaFlag').addEventListener('click', function() {
+            map.setView([35.8617, 104.1954], 6);  // Coordinates for China
+            if (!map.hasLayer(chinaLayer)) {
+                map.addLayer(chinaLayer);  // Add China polygon if not already added
+            }
+            if (map.hasLayer(germanyLayer)) {
+                map.removeLayer(germanyLayer);  // Remove Germany polygon if present
+            }
+
+            // Ensure China polygon is fully visible with bounds
+            var chinaBounds = chinaLayer.getBounds();
+            map.fitBounds(chinaBounds, {padding: [20, 20]});  // Apply padding for better visibility
+        });
+    </script>
+</body>
+</html>
